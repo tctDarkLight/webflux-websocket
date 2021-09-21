@@ -1,5 +1,6 @@
-package com.example.websocketwebflux;
+package com.example.websocketwebflux.config;
 
+import com.example.websocketwebflux.controller.ChatSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.HandlerMapping;
