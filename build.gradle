@@ -24,6 +24,8 @@ ext {
     lombokMapstructBindingVersion = "0.2.0"
 }
 
+
+
 compileJava {
     options.compilerArgs += [
             '-Amapstruct.suppressGeneratorTimestamp=true',
