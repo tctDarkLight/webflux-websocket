@@ -27,7 +27,6 @@ public class ChatSocketHandler implements WebSocketHandler {
 
     @Value("${springbootwebfluxjjwt.token.prefix}")
     private String tokenPrefix;
-    //Flux<String> output = Flux.from(outputMessages).map(this::toJson);
 
     public ChatSocketHandler(AuthService authService) {
         this.authService = authService;
@@ -50,15 +49,6 @@ public class ChatSocketHandler implements WebSocketHandler {
         if (username == null || username.isBlank()) {
             return session.close();
         }
-
-        /*session.receive()
-            .map(WebSocketMessage::getPayloadAsText)
-            .map(this::toEvent)
-            .subscribe(
-                sink::tryEmitNext,
-                sink::tryEmitError
-            );*/
-
         session.receive()
             .map(WebSocketMessage::getPayloadAsText)
             .map(message -> {
@@ -70,14 +60,6 @@ public class ChatSocketHandler implements WebSocketHandler {
                 sink::tryEmitNext,
                 sink::tryEmitError
             );
-
- /*       Flux<String> output = outputMessages
-            .map(event -> {
-                event.getPayload().getUserDTO().setUsername(username);
-                return toJson(event);
-            });*/
-
-//        return session.send(output.map(session::textMessage).log());
 
         return session.send
             (
