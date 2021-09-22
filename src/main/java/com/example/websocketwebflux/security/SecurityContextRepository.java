@@ -1,5 +1,6 @@
 package com.example.websocketwebflux.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,9 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
     private final AuthenticationManager authenticationManager;
 
+    @Value("${springbootwebfluxjjwt.token.prefix}")
+    private String tokenPrefix;
+
     public SecurityContextRepository(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
@@ -27,9 +31,9 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
     @Override
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
-            .filter(authHeader -> authHeader.startsWith("Bearer "))
+            .filter(authHeader -> authHeader.startsWith(tokenPrefix))
             .flatMap(authHeader -> {
-                String authToken = authHeader.substring(7);
+                String authToken = authHeader.substring(tokenPrefix.length());
                 Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
                 return this.authenticationManager
                     .authenticate(auth)

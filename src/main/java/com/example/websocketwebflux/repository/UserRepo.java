@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface IUserRepo extends R2dbcRepository<UserModel, Long> {
+public interface UserRepo extends R2dbcRepository<UserModel, Long> {
     Mono<UserModel> findByUsername(String username);
 }

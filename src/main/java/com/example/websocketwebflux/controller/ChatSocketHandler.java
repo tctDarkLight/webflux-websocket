@@ -4,6 +4,7 @@ import com.example.websocketwebflux.model.Event;
 import com.example.websocketwebflux.service.AuthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -18,18 +19,21 @@ import java.io.IOException;
 
 @Component
 public class ChatSocketHandler implements WebSocketHandler {
+    private final static int numberOfCacheMessage = 25;
     private final Sinks.Many<Event> sink = Sinks.many().multicast().onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE, false);
-    private final Flux<Event> outputMessages = sink.asFlux().cache(25);
+    private final Flux<Event> outputMessages = sink.asFlux().cache(numberOfCacheMessage);
     private final ObjectMapper mapper = new ObjectMapper();
     private final AuthService authService;
-    Flux<String> output = Flux.from(outputMessages).map(this::toJson);
+
+    @Value("${springbootwebfluxjjwt.token.prefix}")
+    private String tokenPrefix;
+    //Flux<String> output = Flux.from(outputMessages).map(this::toJson);
 
     public ChatSocketHandler(AuthService authService) {
         this.authService = authService;
     }
 
     /**
-     *
      * @param session
      * @return
      */
@@ -38,33 +42,51 @@ public class ChatSocketHandler implements WebSocketHandler {
 
         //Getting the token from header of request
         String authToken = session.getHandshakeInfo().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (authToken != null && !authToken.isEmpty() && authToken.startsWith("Bearer ")) {
-            authToken = authToken.substring(7);
+        if (authToken != null && !authToken.isEmpty() && authToken.startsWith(tokenPrefix)) {
+            authToken = authToken.substring(tokenPrefix.length());
         }
 
         String username = authService.getUsernameFromToken(authToken);
         if (username == null || username.isBlank()) {
             return session.close();
         }
-        session.receive()
+
+        /*session.receive()
             .map(WebSocketMessage::getPayloadAsText)
             .map(this::toEvent)
             .subscribe(
                 sink::tryEmitNext,
                 sink::tryEmitError
+            );*/
+
+        session.receive()
+            .map(WebSocketMessage::getPayloadAsText)
+            .map(message -> {
+                Event event = toEvent(message);
+                event.getPayload().getUserDTO().setUsername(username);
+                return event;
+            })
+            .subscribe(
+                sink::tryEmitNext,
+                sink::tryEmitError
             );
 
-        Flux<String> output = outputMessages
+ /*       Flux<String> output = outputMessages
             .map(event -> {
                 event.getPayload().getUserDTO().setUsername(username);
                 return toJson(event);
-            });
+            });*/
 
-        return session.send(output.map(session::textMessage).log());
+//        return session.send(output.map(session::textMessage).log());
 
+        return session.send
+            (
+                outputMessages.map(this::toJson)
+                    .map(session::textMessage).log()
+            );
     }
 
-    Event toEvent(String json) {
+    private Event toEvent(String json) {
         try {
             return mapper.readValue(json, Event.class);
         } catch (IOException e) {
@@ -72,7 +94,7 @@ public class ChatSocketHandler implements WebSocketHandler {
         }
     }
 
-    String toJson(Event event) {
+    private String toJson(Event event) {
         try {
             return mapper.writeValueAsString(event);
         } catch (JsonProcessingException e) {

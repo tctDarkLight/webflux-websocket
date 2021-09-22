@@ -6,7 +6,6 @@ import com.example.websocketwebflux.model.AuthResponse;
 import com.example.websocketwebflux.model.CustomUserDetails;
 import com.example.websocketwebflux.model.UserModel;
 import com.example.websocketwebflux.security.JWTUtil;
-import com.example.websocketwebflux.service.IUserService;
 import com.example.websocketwebflux.service.impl.UserServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
