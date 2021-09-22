@@ -24,7 +24,8 @@ ext {
     lombokMapstructBindingVersion = "0.2.0"
 }
 
-
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean
 
 compileJava {
     options.compilerArgs += [
