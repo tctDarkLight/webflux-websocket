@@ -15,6 +15,10 @@ configurations {
 }
 
 repositories {
+/*    google()
+    jcenter {
+        url "https://oss.jfrog.org/artifactory/oss-snapshot-local/"
+    }*/
     mavenCentral()
 }
 
@@ -64,6 +68,10 @@ dependencies {
     /*testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'*/
     implementation 'com.google.firebase:firebase-admin:8.0.1'
+    //implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.5.10'
+    implementation 'org.springdoc:springdoc-openapi-security:1.5.10'
+
 }
 
 /*

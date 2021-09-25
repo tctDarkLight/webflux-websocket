@@ -51,6 +51,7 @@ public class FirebaseTokenServiceImpl implements FirebaseTokenService {
             decodedToken = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
         } catch (FirebaseAuthException e) {
             e.printStackTrace();
+            throw new InvalidFirebaseTokenException(CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorCode(), CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorMessage());
         }
         return decodedToken.getEmail();
         /*String[] splitEmail = email.split("@");
