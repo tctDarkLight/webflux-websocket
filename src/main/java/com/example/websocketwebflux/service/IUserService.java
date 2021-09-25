@@ -6,4 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface IUserService {
     Mono<UserDTO> createUser(UserModel userModelEntity);
+    Mono<UserDTO> findUserByEmail(String email);
+    Mono<Boolean> isExistUser(String email);
+    Mono<UserDTO> createFirebaseUser(String firebaseToken);
 }

@@ -3,6 +3,7 @@ package com.example.websocketwebflux.controller;
 import com.example.websocketwebflux.dto.UserDTO;
 import com.example.websocketwebflux.model.*;
 import com.example.websocketwebflux.security.JWTUtil;
+import com.example.websocketwebflux.service.AuthService;
 import com.example.websocketwebflux.service.FirebaseTokenService;
 import com.example.websocketwebflux.service.impl.UserServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -20,15 +21,18 @@ public class UserController {
     private final UserServiceImpl userService;
     private final JWTUtil jwtUtil;
     private final FirebaseTokenService firebaseTokenService;
-    public UserController(UserServiceImpl userService, JWTUtil jwtUtil, FirebaseTokenService firebaseTokenService) {
+    private final AuthService authService;
+
+    public UserController(UserServiceImpl userService, JWTUtil jwtUtil, FirebaseTokenService firebaseTokenService, AuthService authService) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.firebaseTokenService = firebaseTokenService;
+        this.authService = authService;
     }
 
     @PostMapping(value = "/user")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<UserDTO> createUser(@RequestBody UserModel userModel){
+    public Mono<UserDTO> createUser(@RequestBody UserModel userModel) {
         return userService.createUser(userModel);
     }
 
@@ -47,34 +51,14 @@ public class UserController {
             .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()));
     }
 
-   /* @PostMapping(value = "/login-firebase")
-    public Mono<ResponseEntity<AuthResponse>> loginFirebase(@RequestBody String firebaseToken){
-        String uid = firebaseTokenService.getUidFromFirebaseToken(firebaseToken);
-        CustomUserDetails userDetails = new CustomUserDetails(UserModel.builder().username(uid).role("USER").build());
-        String token = jwtUtil.generateToken(userDetails);
-        Date expiredDate = jwtUtil.getExpirationDateFromToken(token);
-        return Mono.just(ResponseEntity.ok(new AuthResponse(token, expiredDate)))
-            .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()));
-    }*/
-
     @PostMapping(value = "/login-firebase")
-    public Mono<BaseResponse<Object>> loginFirebase(@RequestBody String firebaseToken){
-        String uid = firebaseTokenService.getUidFromFirebaseToken(firebaseToken);
-        if (uid == null)
-            return Mono.just(
-                BaseResponse.builder()
-                    .result(AuthResponse.builder().token(null).expiredDate(null))
-                    .code(HttpStatus.UNAUTHORIZED.value())
-                    .errorMessage("Error!")
-                    .build());
-        else{
-            CustomUserDetails userDetails = new CustomUserDetails(UserModel.builder().username(uid).role("USER").build());
-            String token = jwtUtil.generateToken(userDetails);
-            Date expiredDate = jwtUtil.getExpirationDateFromToken(token);
-            AuthResponse authResponse = new AuthResponse(token, expiredDate);
-            BaseResponse<Object> baseResponse = BaseResponse.builder().result(authResponse).code(HttpStatus.OK.value()).build();
-            return Mono.just(baseResponse);
-        }
+    public Mono<BaseResponse<Object>> loginFirebase(@RequestBody FirebaseToken firebaseToken) {
+        return authService.loginFirebase(firebaseToken);
     }
 
+    @PostMapping(value = "/sign-up-firebase")
+    public Mono<BaseResponse<Object>> signUpFirebase(@RequestBody FirebaseToken firebaseToken) {
+        return authService.signUpFirebase(firebaseToken);
+    }
 }
+

@@ -5,6 +5,7 @@ import com.example.websocketwebflux.mapper.IUserMapper;
 import com.example.websocketwebflux.model.CustomUserDetails;
 import com.example.websocketwebflux.model.UserModel;
 import com.example.websocketwebflux.repository.IUserRepo;
+import com.example.websocketwebflux.service.FirebaseTokenService;
 import com.example.websocketwebflux.service.IUserService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +19,12 @@ public class UserServiceImpl implements IUserService, ReactiveUserDetailsService
 
     private final IUserRepo userRepo;
     private final IUserMapper userMapper;
+    private final FirebaseTokenService firebaseTokenService;
 
-    public UserServiceImpl(IUserRepo userRepo, IUserMapper userMapper) {
+    public UserServiceImpl(IUserRepo userRepo, IUserMapper userMapper, FirebaseTokenService firebaseTokenService) {
         this.userRepo = userRepo;
         this.userMapper = userMapper;
+        this.firebaseTokenService = firebaseTokenService;
     }
 
     @Override
@@ -36,5 +39,32 @@ public class UserServiceImpl implements IUserService, ReactiveUserDetailsService
         return userRepo.findByUsername(username).switchIfEmpty(Mono.defer(() -> {
             return Mono.error(new UsernameNotFoundException("User Not Found"));
         })).map(CustomUserDetails::new);
+    }
+
+    @Override
+    public Mono<UserDTO> findUserByEmail(String email) {
+        return userRepo.findByEmail(email)
+            .map(userMapper::toDTO);
+    }
+
+    @Override
+    public Mono<Boolean> isExistUser(String email) {
+        return userRepo.findByEmail(email).hasElement();
+    }
+
+    @Override
+    public Mono<UserDTO> createFirebaseUser(String firebaseToken) {
+        String email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken);
+        String[] splitEmail = email.split("@");
+
+        //default username and password is username of email
+        UserModel userModel =
+            UserModel.builder()
+                .username(splitEmail[0])
+                .password(splitEmail[0])
+                .email(email)
+                .role("USER")
+                .build();
+        return this.createUser(userModel);
     }
 }
