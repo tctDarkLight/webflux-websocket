@@ -33,11 +33,18 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Mono<BaseResponse<Object>> loginFirebase(FirebaseToken firebaseToken) {
-        String email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
+
+        String email = "";
+        try {
+            email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
+        }catch (InvalidFirebaseTokenException ex){
+            return Mono.error(new InvalidFirebaseTokenException(CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorCode(), CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorMessage()));
+        }
+        String finalEmail = email;
         return userService
-            .findUserByEmail(email)
+            .findUserByEmail(finalEmail)
             .flatMap(result -> {
-                String[] splitEmail = email.split("@");
+                String[] splitEmail = finalEmail.split("@");
                 AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
                 return Mono.just(BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build());
             })
@@ -46,9 +53,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Mono<BaseResponse<Object>> signUpFirebase(FirebaseToken firebaseToken) {
-        String email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
-        String[] splitEmail = email.split("@");
-        return userService.findUserByEmail(email)
+        String email = "";
+        try {
+            email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
+        }catch (InvalidFirebaseTokenException ex){
+            return Mono.error(new InvalidFirebaseTokenException(CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorCode(), CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorMessage()));
+        }
+        String finalEmail = email;
+        String[] splitEmail = finalEmail.split("@");
+        return userService.findUserByEmail(finalEmail)
             .flatMap(result -> {
                 AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
                 return Mono.just(BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build());

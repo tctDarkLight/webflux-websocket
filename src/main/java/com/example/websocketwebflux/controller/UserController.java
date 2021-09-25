@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.Date;
 
 @RestController
-@RequestMapping(value = "/api")
+//@RequestMapping(value = "/auth")
 public class UserController {
 
     private final UserServiceImpl userService;
@@ -30,12 +30,12 @@ public class UserController {
         this.authService = authService;
     }
 
-    @PostMapping(value = "/user")
+    @PostMapping("/user")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<UserDTO> createUser(@RequestBody UserModel userModel) {
         return userService.createUser(userModel);
     }
-
+/*
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest ar) {
         return userService.findByUsername(ar.getUsername())
@@ -49,9 +49,9 @@ public class UserController {
                 return ResponseEntity.ok(new AuthResponse(token, expiredDate));
             })
             .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()));
-    }
+    }*/
 
-    @PostMapping(value = "/login-firebase")
+   /* @PostMapping(value = "/login-firebase")
     public Mono<BaseResponse<Object>> loginFirebase(@RequestBody FirebaseToken firebaseToken) {
         return authService.loginFirebase(firebaseToken);
     }
@@ -59,6 +59,6 @@ public class UserController {
     @PostMapping(value = "/sign-up-firebase")
     public Mono<BaseResponse<Object>> signUpFirebase(@RequestBody FirebaseToken firebaseToken) {
         return authService.signUpFirebase(firebaseToken);
-    }
+    }*/
 }
 
