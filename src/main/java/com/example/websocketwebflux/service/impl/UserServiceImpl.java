@@ -1,7 +1,7 @@
 package com.example.websocketwebflux.service.impl;
 
 import com.example.websocketwebflux.dto.UserDTO;
-import com.example.websocketwebflux.mapper.IUserMapper;
+import com.example.websocketwebflux.mapper.UserMapper;
 import com.example.websocketwebflux.model.CustomUserDetails;
 import com.example.websocketwebflux.model.UserModel;
 import com.example.websocketwebflux.repository.UserRepo;
@@ -18,10 +18,10 @@ import reactor.core.publisher.Mono;
 public class UserServiceImpl implements UserService, ReactiveUserDetailsService {
 
     private final UserRepo userRepo;
-    private final IUserMapper userMapper;
+    private final UserMapper userMapper;
     private final FirebaseTokenService firebaseTokenService;
 
-    public UserServiceImpl(UserRepo userRepo, IUserMapper userMapper, FirebaseTokenService firebaseTokenService) {
+    public UserServiceImpl(UserRepo userRepo, UserMapper userMapper, FirebaseTokenService firebaseTokenService) {
         this.userRepo = userRepo;
         this.userMapper = userMapper;
         this.firebaseTokenService = firebaseTokenService;
