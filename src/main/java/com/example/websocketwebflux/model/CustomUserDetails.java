@@ -1,6 +1,8 @@
 package com.example.websocketwebflux.model;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,18 +14,23 @@ import java.util.Collections;
 
 @Setter
 @Getter
-public class CustomUserDetails extends User implements UserDetails {
+@NoArgsConstructor
+public class CustomUserDetails /*extends User*/ implements UserDetails {
 
-    UserModel user;
+    private UserModel user;
 
     public CustomUserDetails(UserModel user) {
+        this.user = user;
+    }
+
+    /*public CustomUserDetails(UserModel user) {
         super(
             user.getUsername(),
             user.getPassword(),
             Collections.singleton(new SimpleGrantedAuthority(user.getRole()))
         );
         this.user = user;
-    }
+    }*/
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
