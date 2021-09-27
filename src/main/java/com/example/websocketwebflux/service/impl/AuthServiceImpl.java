@@ -1,6 +1,5 @@
 package com.example.websocketwebflux.service.impl;
 
-import com.example.websocketwebflux.exception.CustomResponseStatus;
 import com.example.websocketwebflux.exception.InvalidFirebaseTokenException;
 import com.example.websocketwebflux.model.AuthResponse;
 import com.example.websocketwebflux.model.BaseResponse;
@@ -34,45 +33,38 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Mono<BaseResponse<Object>> loginFirebase(FirebaseToken firebaseToken) {
 
-        String email = "";
-        try {
-            email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
-        }catch (InvalidFirebaseTokenException ex){
-            return Mono.error(new InvalidFirebaseTokenException(CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorCode(), CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorMessage()));
-        }
-        String finalEmail = email;
+        String email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
+
         return userService
-            .findUserByEmail(finalEmail)
+            .findUserByEmail(email)
             .flatMap(result -> {
-                String[] splitEmail = finalEmail.split("@");
+                String[] splitEmail = email.split("@");
                 AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
                 return Mono.just(BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build());
             })
-            .switchIfEmpty(Mono.error(new InvalidFirebaseTokenException(CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorCode(), CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorMessage())));
+            .switchIfEmpty(Mono.error(new InvalidFirebaseTokenException()));
+
     }
 
     @Override
     public Mono<BaseResponse<Object>> signUpFirebase(FirebaseToken firebaseToken) {
-        String email = "";
-        try {
-            email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
-        }catch (InvalidFirebaseTokenException ex){
-            return Mono.error(new InvalidFirebaseTokenException(CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorCode(), CustomResponseStatus.INVALID_FIREBASE_TOKEN.getErrorMessage()));
-        }
-        String finalEmail = email;
-        String[] splitEmail = finalEmail.split("@");
-        return userService.findUserByEmail(finalEmail)
-            .flatMap(result -> {
+
+        String email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
+        String[] splitEmail = email.split("@");
+
+        return userService.findUserByEmail(email)
+            .map(result -> {
                 AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
-                return Mono.just(BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build());
+                return BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build();
             })
-            .switchIfEmpty(Mono.defer(() -> {
-                    return userService.createFirebaseUser(firebaseToken.getFirebaseToken())
-                        .flatMap(result -> {
+            .switchIfEmpty
+                (
+                    userService.createFirebaseUser(firebaseToken.getFirebaseToken())
+                        .map(result -> {
                             AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
-                            return Mono.just(BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build());
-                        });
-                })
-            );
+                            return BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build();
+                        })
+                );
     }
+
 }

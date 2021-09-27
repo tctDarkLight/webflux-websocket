@@ -12,6 +12,8 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class AuthResponse {
+
     private String token;
     private Date expiredDate;
+
 }

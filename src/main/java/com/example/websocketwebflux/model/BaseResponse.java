@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class BaseResponse<T> implements Serializable {
+
     private String code;
     private String errorMessage;
     private T result;

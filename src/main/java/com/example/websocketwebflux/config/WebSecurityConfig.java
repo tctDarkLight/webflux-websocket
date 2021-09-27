@@ -15,6 +15,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class WebSecurityConfig {
+
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
     private Logger logger;
@@ -33,6 +34,8 @@ public class WebSecurityConfig {
             .permitAll()
             .and()
             .csrf().disable()
+            .logout().disable()
             .build();
     }
+
 }

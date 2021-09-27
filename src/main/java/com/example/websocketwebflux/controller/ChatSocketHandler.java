@@ -19,6 +19,7 @@ import java.io.IOException;
 
 @Component
 public class ChatSocketHandler implements WebSocketHandler {
+
     private final static int numberOfCacheMessage = 25;
     private final Sinks.Many<Event> sink = Sinks.many().multicast().onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE, false);
     private final Flux<Event> outputMessages = sink.asFlux().cache(numberOfCacheMessage);
@@ -49,6 +50,7 @@ public class ChatSocketHandler implements WebSocketHandler {
         if (username == null || username.isBlank()) {
             return session.close();
         }
+
         session.receive()
             .map(WebSocketMessage::getPayloadAsText)
             .map(message -> {
@@ -69,6 +71,7 @@ public class ChatSocketHandler implements WebSocketHandler {
     }
 
     private Event toEvent(String json) {
+
         try {
             return mapper.readValue(json, Event.class);
         } catch (IOException e) {

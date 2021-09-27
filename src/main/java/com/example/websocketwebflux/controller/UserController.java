@@ -19,15 +19,9 @@ import java.util.Date;
 public class UserController {
 
     private final UserServiceImpl userService;
-    private final JWTUtil jwtUtil;
-    private final FirebaseTokenService firebaseTokenService;
-    private final AuthService authService;
 
-    public UserController(UserServiceImpl userService, JWTUtil jwtUtil, FirebaseTokenService firebaseTokenService, AuthService authService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
-        this.firebaseTokenService = firebaseTokenService;
-        this.authService = authService;
     }
 
     @PostMapping("/user")

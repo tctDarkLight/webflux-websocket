@@ -15,9 +15,11 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Payload {
+
     @JsonProperty("user")
     private UserDTO userDTO;
 
     @Builder.Default
     private Map<String, Object> properties = new HashMap<>();
+
 }

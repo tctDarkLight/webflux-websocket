@@ -1,17 +1,19 @@
 package com.example.websocketwebflux.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-
-import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseModel implements Serializable {
+@Builder
+public class FirebaseUser {
 
-    @Id
-    private Long id;
+    private String uid;
+    private String name;
+    private String picture;
+    private String email;
+
 }

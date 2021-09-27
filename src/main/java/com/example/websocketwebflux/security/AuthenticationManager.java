@@ -19,6 +19,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
+
         String authToken = authentication.getCredentials().toString();
         String username = jwtUtil.getUsernameFromToken(authToken);
 
@@ -31,4 +32,5 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
             Collections.singleton(new SimpleGrantedAuthority(rolesMap)))
         );
     }
+
 }

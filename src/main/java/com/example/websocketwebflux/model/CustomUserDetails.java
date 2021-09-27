@@ -23,15 +23,6 @@ public class CustomUserDetails /*extends User*/ implements UserDetails {
         this.user = user;
     }
 
-    /*public CustomUserDetails(UserModel user) {
-        super(
-            user.getUsername(),
-            user.getPassword(),
-            Collections.singleton(new SimpleGrantedAuthority(user.getRole()))
-        );
-        this.user = user;
-    }*/
-
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(user.getRole()));

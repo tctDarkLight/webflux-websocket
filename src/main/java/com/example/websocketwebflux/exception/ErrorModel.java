@@ -12,4 +12,8 @@ public abstract class ErrorModel extends RuntimeException{
     @Getter
     private String errorMessage;
 
+    public ErrorModel(CustomResponseStatus customResponseStatus){
+        this.errorCode = customResponseStatus.getErrorCode();
+        this.errorMessage = customResponseStatus.getErrorMessage();
+    };
 }

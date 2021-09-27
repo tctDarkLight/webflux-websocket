@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
+
     public enum Type {
         CHAT_MESSAGE, USER_JOINED, USER_STATS, USER_LEFT
     }

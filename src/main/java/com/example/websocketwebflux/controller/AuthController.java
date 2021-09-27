@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/auth")
 public class AuthController {
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -19,12 +22,12 @@ public class AuthController {
     }
 
     @PostMapping("/login-firebase")
-    public Mono<BaseResponse<Object>> loginFirebase(@RequestBody FirebaseToken firebaseToken) {
+    public Mono<BaseResponse<Object>> loginFirebase(@Valid @RequestBody FirebaseToken firebaseToken) {
         return authService.loginFirebase(firebaseToken);
     }
 
     @PostMapping("/sign-up-firebase")
-    public Mono<BaseResponse<Object>> signUpFirebase(@RequestBody FirebaseToken firebaseToken) {
+    public Mono<BaseResponse<Object>> signUpFirebase(@Valid @RequestBody FirebaseToken firebaseToken) {
         return authService.signUpFirebase(firebaseToken);
     }
 }

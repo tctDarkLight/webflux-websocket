@@ -6,6 +6,7 @@ import com.example.websocketwebflux.model.BaseModel;
 import java.util.List;
 
 public interface BaseMapper<DTO extends BaseDTO, ENTITY extends BaseModel> {
+
     DTO toDTO(ENTITY entity);
 
     ENTITY toEntity(DTO dto);
@@ -13,4 +14,5 @@ public interface BaseMapper<DTO extends BaseDTO, ENTITY extends BaseModel> {
     List<DTO> toDTO(List<ENTITY> entities);
 
     List<ENTITY> toEntity(List<DTO> dtos);
+
 }
