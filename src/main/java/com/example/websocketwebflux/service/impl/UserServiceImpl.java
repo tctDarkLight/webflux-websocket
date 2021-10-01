@@ -27,9 +27,9 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
     private final UserMapper userMapper;
     private final FirebaseTokenService firebaseTokenService;
     private final RandomPasswordGenerator randomPasswordGenerator;
-    @Value("${springbootwebflux.validation.regex}")
+    /*@Value("${springbootwebflux.validation.regex}")
     private String regexPassword;
-
+*/
     public UserServiceImpl(UserRepo userRepo, UserMapper userMapper, FirebaseTokenService firebaseTokenService, RandomPasswordGenerator randomPasswordGenerator) {
         this.userRepo = userRepo;
         this.userMapper = userMapper;
@@ -70,7 +70,15 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
         String[] splitEmail = email.split("@");
         String randomPassword = randomPasswordGenerator.generatePassayPassword();
 
-        if (randomPassword.matches(regexPassword)){
+        UserModel userModel =
+            UserModel.builder()
+                .username(splitEmail[0])
+                .password(randomPassword)
+                .email(email)
+                .role(RoleUser.userRole)
+                .build();
+        return this.createUser(userModel);
+       /* if (randomPassword.matches(regexPassword)){
             UserModel userModel =
                 UserModel.builder()
                     .username(splitEmail[0])
@@ -81,7 +89,7 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
             return this.createUser(userModel);
         }else {
             return Mono.error(new PasswordInvalidException());
-        }
+        }*/
 
     }
 }

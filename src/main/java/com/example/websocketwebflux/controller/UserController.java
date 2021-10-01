@@ -6,12 +6,16 @@ import com.example.websocketwebflux.security.JWTUtil;
 import com.example.websocketwebflux.service.AuthService;
 import com.example.websocketwebflux.service.FirebaseTokenService;
 import com.example.websocketwebflux.service.impl.UserServiceImpl;
+import org.springframework.boot.context.config.Profiles;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
 import java.util.Date;
 
 @RestController
@@ -24,11 +28,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user")
+    /*@PostMapping("/user")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<UserDTO> createUser(@RequestBody UserModel userModel) {
         return userService.createUser(userModel);
-    }
+    }*/
+
 /*
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest ar) {

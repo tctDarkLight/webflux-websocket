@@ -8,10 +8,9 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomDTO extends BaseDTO{
-
+public class RoomDTO{
     private String name;
-    private String roleGame;
+    private Long typeGameId;
     private String imageBackgroundUrl;
 
 }

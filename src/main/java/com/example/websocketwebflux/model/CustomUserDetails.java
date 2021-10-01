@@ -15,7 +15,7 @@ import java.util.Collections;
 @Setter
 @Getter
 @NoArgsConstructor
-public class CustomUserDetails /*extends User*/ implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private UserModel user;
 
