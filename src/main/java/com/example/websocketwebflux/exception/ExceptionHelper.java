@@ -55,4 +55,20 @@ public class ExceptionHelper {
             .build();
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public BaseResponse<Object> handleUserNotFoundException(UserNotFoundException ex){
+        return BaseResponse.builder()
+            .code(ex.getErrorCode())
+            .errorMessage(ex.getErrorMessage())
+            .build();
+    }
+
+    @ExceptionHandler(CreateRoomFailException.class)
+    public BaseResponse<Object> handleCreateRoomFailException(CreateRoomFailException ex){
+        return BaseResponse.builder()
+            .code(ex.getErrorCode())
+            .errorMessage(ex.getErrorMessage())
+            .build();
+    }
+
 }

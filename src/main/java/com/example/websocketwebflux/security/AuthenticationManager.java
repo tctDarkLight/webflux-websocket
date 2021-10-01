@@ -21,13 +21,13 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     public Mono<Authentication> authenticate(Authentication authentication) {
 
         String authToken = authentication.getCredentials().toString();
-        String username = jwtUtil.getUsernameFromToken(authToken);
-
+        //String username = jwtUtil.getUsernameFromToken(authToken);
+        Long uid = Long.parseLong(jwtUtil.getUidFromToken(authToken));
         Claims claims = jwtUtil.getAllClaimsFromToken(authToken);
         //List<String> rolesMap = claims.get("role", List.class);
         String rolesMap = claims.get("role", String.class);
         return Mono.just(new UsernamePasswordAuthenticationToken(
-            username,
+            uid,
             null,
             Collections.singleton(new SimpleGrantedAuthority(rolesMap)))
         );

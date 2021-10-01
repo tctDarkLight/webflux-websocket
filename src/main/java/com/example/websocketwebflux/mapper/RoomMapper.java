@@ -5,5 +5,7 @@ import com.example.websocketwebflux.model.RoomModel;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface RoomMapper extends BaseMapper<RoomDTO, RoomModel> {
+public interface RoomMapper {
+    RoomModel toModel(RoomDTO roomDTO);
+    RoomDTO toDTO(RoomModel roomModel);
 }

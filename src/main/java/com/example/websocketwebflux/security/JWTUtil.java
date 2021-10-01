@@ -38,13 +38,15 @@ public class JWTUtil {
             .getBody();
     }
 
+
     public String getUsernameFromToken(String token) {
         return getAllClaimsFromToken(token).getSubject();
     }
 
+
     public String getUidFromToken(String token) {
         Object uid = getAllClaimsFromToken(token).get("uid");
-        return "" + uid;
+        return uid.toString();
     }
 
     public Date getExpirationDateFromToken(String token) {

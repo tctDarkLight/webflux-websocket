@@ -1,6 +1,6 @@
 package com.example.websocketwebflux.service.impl;
 
-import com.example.websocketwebflux.exception.InvalidFirebaseTokenException;
+import com.example.websocketwebflux.exception.UserNotFoundException;
 import com.example.websocketwebflux.model.AuthResponse;
 import com.example.websocketwebflux.model.BaseResponse;
 import com.example.websocketwebflux.model.FirebaseToken;
@@ -38,11 +38,14 @@ public class AuthServiceImpl implements AuthService {
         return userService
             .findUserByEmail(email)
             .flatMap(result -> {
-                String[] splitEmail = email.split("@");
-                AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
+                Long uid = result.getId();
+
+                AuthResponse authResponse
+                    = firebaseTokenService.generateJWTFromUidAndFirebaseToken(uid, firebaseToken.getFirebaseToken());
+
                 return Mono.just(BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build());
             })
-            .switchIfEmpty(Mono.error(new InvalidFirebaseTokenException()));
+            .switchIfEmpty(Mono.error(new UserNotFoundException()));
 
     }
 
@@ -50,18 +53,27 @@ public class AuthServiceImpl implements AuthService {
     public Mono<BaseResponse<Object>> signUpFirebase(FirebaseToken firebaseToken) {
 
         String email = firebaseTokenService.getEmailFromFirebaseToken(firebaseToken.getFirebaseToken());
-        String[] splitEmail = email.split("@");
 
         return userService.findUserByEmail(email)
             .map(result -> {
-                AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
+                Long uid = result.getId();
+
+                AuthResponse authResponse =
+                    firebaseTokenService.generateJWTFromUidAndFirebaseToken(uid, firebaseToken.getFirebaseToken());
+
                 return BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build();
             })
             .switchIfEmpty
                 (
                     userService.createFirebaseUser(firebaseToken.getFirebaseToken())
                         .map(result -> {
-                            AuthResponse authResponse = firebaseTokenService.generateJWTFromUsername(splitEmail[0]);
+                            Long uid = result.getId();
+
+                            AuthResponse authResponse =
+                                firebaseTokenService.generateJWTFromUidAndFirebaseToken(
+                                    uid, firebaseToken.getFirebaseToken()
+                                );
+
                             return BaseResponse.builder().result(authResponse).code(HttpStatus.OK.name()).build();
                         })
                 );

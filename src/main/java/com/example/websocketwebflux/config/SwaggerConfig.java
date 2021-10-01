@@ -10,7 +10,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
             .group("springs-public")
-            .pathsToMatch("/auth/**")
+            .pathsToMatch("/**")
             .build();
     }
 }

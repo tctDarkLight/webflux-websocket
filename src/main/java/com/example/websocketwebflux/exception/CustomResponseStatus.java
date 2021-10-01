@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 public enum CustomResponseStatus {
 
     INVALID_FIREBASE_TOKEN("ER_0001", "Invalid firebase token"),
-    VALIDATION_FAILED("ER_0002", "Validation failed");
+    VALIDATION_FAILED("ER_0002", "Validation failed"),
+    USER_NOT_FOUND("ER_0003", "User not found"),
+    CREATE_ROOM_FAIL("ER_0004", "Create room fail");
 
     @Getter
     private String errorCode;

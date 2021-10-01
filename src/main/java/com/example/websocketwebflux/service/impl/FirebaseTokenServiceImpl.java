@@ -35,13 +35,13 @@ public class FirebaseTokenServiceImpl implements FirebaseTokenService {
     }
 
     @Override
-    public AuthResponse generateJWTFromUsername(String uid) {
+    public AuthResponse generateJWTFromUsername(String username) {
 
         CustomUserDetails userDetails =
             new CustomUserDetails
                 (
                     UserModel.builder()
-                        .username(uid)
+                        .username(username)
                         .role(RoleUser.userRole)
                         .build()
                 );
@@ -85,5 +85,30 @@ public class FirebaseTokenServiceImpl implements FirebaseTokenService {
             .picture(decodedToken.getPicture())
             .build();
 
+    }
+
+    @Override
+    public AuthResponse generateJWTFromFirebaseToken(String firebaseToken) {
+        return null;
+    }
+
+    @Override
+    public AuthResponse generateJWTFromUidAndFirebaseToken(Long uid, String firebaseToken) {
+        String email = getEmailFromFirebaseToken(firebaseToken);
+        String[] splitEmail = email.split("@");
+        String username = splitEmail[0];
+        CustomUserDetails userDetails =
+            new CustomUserDetails
+                (
+                    UserModel.builder()
+                        .username(username)
+                        .id(uid)
+                        .role(RoleUser.userRole)
+                        .build()
+                );
+
+        String token = jwtUtil.generateToken(userDetails);
+        Date expiredDate = jwtUtil.getExpirationDateFromToken(token);
+        return AuthResponse.builder().token(token).expiredDate(expiredDate).build();
     }
 }

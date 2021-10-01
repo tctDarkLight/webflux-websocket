@@ -35,7 +35,8 @@ public class WebSecurityConfig {
             .and()
             .csrf().disable()
             .logout().disable()
+            .authenticationManager(authenticationManager)
+            .securityContextRepository(securityContextRepository)
             .build();
     }
-
 }
